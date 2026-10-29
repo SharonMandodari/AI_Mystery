@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/mystery.controller.js';
+import { generationLimiter, actionLimiter } from '../middleware/rate-limit.middleware.js';
+const router=Router();
+router.post('/',generationLimiter,(req,res,next)=>controller.create(req,res).catch(next));
+router.get('/:caseId',(req,res,next)=>controller.retrieve(req,res).catch(next));
+router.get('/:caseId/evidence/:evidenceId',(req,res,next)=>controller.evidence(req,res).catch(next));
+router.patch('/:caseId/progress',actionLimiter,(req,res,next)=>controller.progress(req,res).catch(next));
+router.post('/:caseId/accusation',actionLimiter,(req,res,next)=>controller.accuse(req,res).catch(next));
+router.get('/:caseId/result',(req,res,next)=>controller.result(req,res).catch(next));
+export default router;
