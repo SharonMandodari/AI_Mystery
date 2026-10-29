@@ -11,6 +11,13 @@ export const env = {
   useMockGenerator: process.env.USE_MOCK_GENERATOR !== 'false'
 };
 
-if (env.nodeEnv === 'production' && (!env.mongoUri || !env.geminiApiKey || env.caseTokenSecret.includes('change-me'))) {
-  throw new Error('Production requires MONGODB_URI, GEMINI_API_KEY, and a strong CASE_TOKEN_SECRET.');
+export const allowedOrigins = env.clientOrigin.split(',').map(origin => origin.trim()).filter(Boolean);
+
+if (env.nodeEnv === 'production') {
+  const invalidOrigins = allowedOrigins.some(origin => {
+    try { return new URL(origin).protocol !== 'https:'; } catch { return true; }
+  });
+  if (!env.mongoUri || !env.geminiApiKey || env.caseTokenSecret.length < 32 || invalidOrigins) {
+    throw new Error('Production requires MONGODB_URI, GEMINI_API_KEY, a CASE_TOKEN_SECRET of at least 32 characters, and HTTPS CLIENT_ORIGIN value(s).');
+  }
 }

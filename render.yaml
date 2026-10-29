@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: ai-mystery-room-api
+    runtime: node
+    rootDir: server
+    region: singapore
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_MOCK_GENERATOR
+        value: "false"
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: CASE_TOKEN_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

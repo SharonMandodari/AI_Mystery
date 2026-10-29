@@ -1,4 +1,7 @@
-const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1').replace(/\/$/, '');
+const configuredBase = import.meta.env.VITE_API_BASE_URL;
+if (import.meta.env.PROD && !configuredBase) throw new Error('VITE_API_BASE_URL must be set for a production build.');
+if (import.meta.env.PROD && configuredBase && !configuredBase.startsWith('https://')) throw new Error('Production API URL must use HTTPS.');
+const base = (configuredBase || 'http://localhost:5000/api/v1').replace(/\/$/, '');
 export async function api(path, { caseId, token, ...options } = {}) {
   const headers = { ...(options.body ? { 'Content-Type':'application/json' } : {}), ...(token ? { 'X-Case-Token':token } : {}), ...options.headers };
   const response = await fetch(`${base}${path}`, { ...options, headers });
